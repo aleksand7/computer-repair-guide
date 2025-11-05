@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Справочник по обслуживанию и ремонту компьютерных систем</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 1.5rem 0 0.5rem;
+        }
+        
+        .intro {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .search-box {
+            max-width: 600px;
+            margin: 2rem auto;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--secondary);
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 2rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn:hover {
+            color: var(--secondary);
+        }
+        
+        .tab-btn.active {
+            color: var(--secondary);
+            border-bottom: 3px solid var(--secondary);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .problem-list {
+            list-style-type: none;
+        }
+        
+        .problem-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .problem-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .problem-item:last-child {
+            border-bottom: none;
+        }
+        
+        .solution {
+            background: #e8f4fc;
+            border-left: 4px solid var(--secondary);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 4px 4px 0;
+            display: none;
+        }
+        
+        .solution.active {
+            display: block;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .component {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .component:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .component i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .tool-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .tool-table th, .tool-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tool-table th {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tool-table tr:hover {
+            background: #f5f7fa;
+        }
+        
+        .quiz-container {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 1.5rem;
+        }
+        
+        .quiz-question {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .quiz-options {
+            list-style-type: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .quiz-option {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #f5f7fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .quiz-option:hover {
+            background: #e8f4fc;
+        }
+        
+        .quiz-option.selected {
+            background: #d4edda;
+            border-left: 4px solid var(--success);
+        }
+        
+        .quiz-result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .quiz-result.correct {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .quiz-result.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .card-grid, .component-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Техническое обслуживание и ремонт компьютерных систем</h1>
+            <p class="intro">Полный справочник по диагностике, обслуживанию и ремонту компьютерного оборудования</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Поиск по проблемам, компонентам, инструментам...">
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="tab-btn active" data-tab="problems">Типичные проблемы</button>
+            <button class="tab-btn" data-tab="components">Компоненты ПК</button>
+            <button class="tab-btn" data-tab="tools">Инструменты и ПО</button>
+            <button class="tab-btn" data-tab="quiz">Проверка знаний</button>
+        </div>
+        
+        <div id="problems" class="tab-content active">
+            <h2>Распространенные проблемы и решения</h2>
+            <p>Выберите проблему для просмотра возможных причин и решений:</p>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">Проблемы с питанием</div>
+                    <div class="card-body">
+                        <ul class="problem-list">
+                            <li class="problem-item" data-solution="power1">Компьютер не включается</li>
+                            <li class="problem-item" data-solution="power2">Самопроизвольное выключение</li>
+                            <li class="problem-item" data-solution="power3">Нестабильная работа</li>
+                        </ul>
+                        
+                        <div id="power1" class="solution">
+                            <h3>Компьютер не включается</h3>
+                            <p><strong>Возможные причины:</strong></p>
+                            <ul>
+                                <li>Неисправность блока питания</li>
+                                <li>Проблемы с кабелем питания</li>
+                                <li>Неисправность кнопки включения</li>
+                                <li>Короткое замыкание на материнской плате</li>
+                            </ul>
+                            <p><strong>Решение:</strong></p>
+                            <ol>
+                                <li>Проверьте подключение кабеля питания к розетке и БП</li>
+                                <li>Попробуйте другой кабель питания</li>
+                                <li>Проверьте кнопку включения на корпусе</li>
+                                <li>Протестируйте блок питания на другом ПК или с помощью тестера</li>
+                            </ol>
+                        </div>
+                        
+                        <div id="power2" class="solution">
+                            <h3>Самопроизвольное выключение</h3>
+                            <p><strong>Возможные причины:</strong></p>
+                            <ul>
+                                <li>Перегрев компонентов</li>
+                                <li>Недостаточная мощность БП</li>
+                                <li>Нестабильное напряжение в сети</li>
+                            </ul>
+                            <p><strong>Решение:</strong></p>
+                            <ol>
+                                <li>Очистите систему охлаждения от пыли</li>
+                                <li>Проверьте температуру процессора и видеокарты</li>
+                                <li>Убедитесь, что БП обеспечивает достаточную мощность</li>
+                                <li>Используйте ИБП для стабилизации напряжения</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Проблемы с загрузкой</div>
+                    <div class="card-body">
+                        <ul class="problem-list">
+                            <li class="problem-item" data-solution="boot1">Нет изображения на мониторе</li>
+                            <li class="problem-item" data-solution="boot2">Компьютер зависает при загрузке</li>
+                            <li class="problem-item" data-solution="boot3">Синий экран (BSOD)</li>
+                        </ul>
+                        
+                        <div id="boot1" class="solution">
+                            <h3>Нет изображения на мониторе</h3>
+                            <p><strong>Возможные причины:</strong></p>
+                            <ul>
+                                <li>Неисправность монитора или кабеля</li>
+                                <li>Проблемы с видеокартой</li>
+                                <li>Неправильные настройки BIOS</li>
+                                <li>Неисправность оперативной памяти</li>
+                            </ul>
+                            <p><strong>Решение:</strong></p>
+                            <ol>
+                                <li>Проверьте подключение монитора и исправность кабеля</li>
+                                <li>Попробуйте подключить монитор к другому порту или видеокарте</li>
+                                <li>Сбросьте настройки BIOS</li>
+                                <li>Проверьте оперативную память (переустановите, протестируйте)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Проблемы с производительностью</div>
+                    <div class="card-body">
+                        <ul class="problem-list">
+                            <li class="problem-item" data-solution="perf1">Медленная работа системы</li>
+                            <li class="problem-item" data-solution="perf2">Сильный шум при работе</li>
+                            <li class="problem-item" data-solution="perf3">Частые зависания</li>
+                        </ul>
+                        
+                        <div id="perf1" class="solution">
+                            <h3>Медленная работа системы</h3>
+                            <p><strong>Возможные причины:</strong></p>
+                            <ul>
+                                <li>Недостаточно оперативной памяти</li>
+                                <li>Переполненный жесткий диск</li>
+                                <li>Фоновые процессы и вирусы</li>
+                                <li>Устаревшие драйверы</li>
+                            </ul>
+                            <p><strong>Решение:</strong></p>
+                            <ol>
+                                <li>Очистите диск от ненужных файлов</li>
+                                <li>Добавьте оперативной памяти</li>
+                                <li>Проверьте систему на вирусы</li>
+                                <li>Обновите драйверы устройств</li>
+                                <li>Рассмотрите переход на SSD</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="components" class="tab-content">
+            <h2>Основные компоненты компьютера</h2>
+            <p>Информация об основных компонентах ПК, их назначении и типичных неисправностях:</p>
+            
+            <div class="component-grid">
+                <div class="component">
+                    <i>💻</i>
+                    <h3>Материнская плата</h3>
+                    <p>Основная плата, соединяющая все компоненты компьютера</p>
+                </div>
+                
+                <div class="component">
+                    <i>⚡</i>
+                    <h3>Блок питания</h3>
+                    <p>Преобразует сетевое напряжение и обеспечивает питание компонентов</p>
+                </div>
+                
+                <div class="component">
+                    <i>🧠</i>
+                    <h3>Процессор (CPU)</h3>
+                    <p>Центральный процессор - "мозг" компьютера</p>
+                </div>
+                
+                <div class="component">
+                    <i>💾</i>
+                    <h3>Оперативная память (RAM)</h3>
+                    <p>Временное хранилище данных для быстрого доступа</p>
+                </div>
+                
+                <div class="component">
+                    <i>🖥️</i>
+                    <h3>Видеокарта (GPU)</h3>
+                    <p>Обрабатывает графику и выводит изображение на монитор</p>
+                </div>
+                
+                <div class="component">
+                    <i>💿</i>
+                    <h3>Накопители (HDD/SSD)</h3>
+                    <p>Устройства для постоянного хранения данных</p>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">Диагностика компонентов</div>
+                <div class="card-body">
+                    <h3>Методы диагностики основных компонентов</h3>
+                    
+                    <h4>Материнская плата</h4>
+                    <ul>
+                        <li>Визуальный осмотр на предмет повреждений и вздутых конденсаторов</li>
+                        <li>Проверка POST-кодов (если доступно)</li>
+                        <li>Тестирование с минимальной конфигурацией</li>
+                    </ul>
+                    
+                    <h4>Блок питания</h4>
+                    <ul>
+                        <li>Проверка напряжения на разъемах мультиметром</li>
+                        <li>Тест "скрепкой" (замыкание контактов PS_ON и GND)</li>
+                        <li>Замена на заведомо исправный БП</li>
+                    </ul>
+                    
+                    <h4>Оперативная память</h4>
+                    <ul>
+                        <li>Тестирование с помощью Memtest86+</li>
+                        <li>Проверка в разных слотах материнской платы</li>
+                        <li>Замена на заведомо исправные модули</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="tools" class="tab-content">
+            <h2>Инструменты и программное обеспечение</h2>
+            <p>Необходимые инструменты и программы для диагностики и ремонта компьютеров:</p>
+            
+            <h3>Аппаратные инструменты</h3>
+            <table class="tool-table">
+                <thead>
+                    <tr>
+                        <th>Инструмент</th>
+                        <th>Назначение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Мультиметр</td>
+                        <td>Измерение напряжения, сопротивления, проверка целостности цепей</td>
+                    </tr>
+                    <tr>
+                        <td>Набор отверток</td>
+                        <td>Разборка и сборка компонентов</td>
+                    </tr>
+                    <tr>
+                        <td>Антистатический браслет</td>
+                        <td>Защита компонентов от статического электричества</td>
+                    </tr>
+                    <tr>
+                        <td>Термопаста</td>
+                        <td>Обеспечение теплопроводности между процессором и радиатором</td>
+                    </tr>
+                    <tr>
+                        <td>POST-карта</td>
+                        <td>Диагностика материнской платы по кодам ошибок</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin-top: 2rem;">Программное обеспечение</h3>
+            <table class="tool-table">
+                <thead>
+                    <tr>
+                        <th>Программа</th>
+                        <th>Назначение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Memtest86+</td>
+                        <td>Тестирование оперативной памяти</td>
+                    </tr>
+                    <tr>
+                        <td>CrystalDiskInfo</td>
+                        <td>Проверка состояния жестких дисков и SSD</td>
+                    </tr>
+                    <tr>
+                        <td>HWMonitor</td>
+                        <td>Мониторинг температуры и напряжения компонентов</td>
+                    </tr>
+                    <tr>
+                        <td>Victoria</td>
+                        <td>Углубленная диагностика жестких дисков</td>
+                    </tr>
+                    <tr>
+                        <td>AIDA64</td>
+                        <td>Комплексная диагностика и тестирование системы</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="quiz" class="tab-content">
+            <h2>Проверка знаний</h2>
+            <p>Пройдите тест для проверки своих знаний по техническому обслуживанию компьютеров:</p>
+            
+            <div class="quiz-container">
+                <div class="quiz-question" id="question1">1. Что следует проверить в первую очередь, если компьютер не включается?</div>
+                <ul class="quiz-options">
+                    <li class="quiz-option" data-correct="true">Подключение к электросети и исправность кабеля питания</li>
+                    <li class="quiz-option">Состояние оперативной памяти</li>
+                    <li class="quiz-option">Настройки BIOS</li>
+                    <li class="quiz-option">Исправность видеокарты</li>
+                </ul>
+                
+                <div class="quiz-result correct" id="result1-correct">
+                    <strong>Правильно!</strong> Первым делом всегда нужно проверить самые простые вещи - подключение к питанию.
+                </div>
+                <div class="quiz-result incorrect" id="result1-incorrect">
+                    <strong>Неверно.</strong> Первым делом всегда нужно проверить самые простые вещи - подключение к питанию.
+                </div>
+                
+                <button class="btn" id="nextQuestion1">Следующий вопрос</button>
+            </div>
+            
+            <div class="quiz-container" style="display: none;" id="question2-container">
+                <div class="quiz-question" id="question2">2. Какой инструмент используется для измерения напряжения в блоке питания?</div>
+                <ul class="quiz-options">
+                    <li class="quiz-option">Осциллограф</li>
+                    <li class="quiz-option" data-correct="true">Мультиметр</li>
+                    <li class="quiz-option">Логический анализатор</li>
+                    <li class="quiz-option">Термометр</li>
+                </ul>
+                
+                <div class="quiz-result correct" id="result2-correct">
+                    <strong>Правильно!</strong> Мультиметр - основной инструмент для измерения электрических параметров.
+                </div>
+                <div class="quiz-result incorrect" id="result2-incorrect">
+                    <strong>Неверно.</strong> Для измерения напряжения используется мультиметр.
+                </div>
+                
+                <button class="btn" id="nextQuestion2">Следующий вопрос</button>
+            </div>
+            
+            <div class="quiz-container" style="display: none;" id="question3-container">
+                <div class="quiz-question" id="question3">3. Какая программа используется для тестирования оперативной памяти?</div>
+                <ul class="quiz-options">
+                    <li class="quiz-option">CrystalDiskInfo</li>
+                    <li class="quiz-option">HWMonitor</li>
+                    <li class="quiz-option" data-correct="true">Memtest86+</li>
+                    <li class="quiz-option">Victoria</li>
+                </ul>
+                
+                <div class="quiz-result correct" id="result3-correct">
+                    <strong>Правильно!</strong> Memtest86+ - специализированная программа для тестирования оперативной памяти.
+                </div>
+                <div class="quiz-result incorrect" id="result3-incorrect">
+                    <strong>Неверно.</strong> Для тестирования оперативной памяти используется Memtest86+.
+                </div>
+                
+                <button class="btn" id="showResults">Показать результаты</button>
+            </div>
+            
+            <div class="quiz-container" style="display: none; text-align: center;" id="results-container">
+                <h3>Результаты теста</h3>
+                <p id="score-text">Вы ответили правильно на <span id="correct-answers">0</span> из 3 вопросов</p>
+                <button class="btn" id="restartQuiz">Пройти тест заново</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Справочник по техническому обслуживанию и ремонту компьютерных систем</p>
+            <p>© 2023 Все права защищены</p>
+        </div>
+    </footer>
+
+    <script>
+        // Переключение между вкладками
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Убираем активный класс у всех кнопок и вкладок
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Добавляем активный класс к текущей кнопке и вкладке
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // Отображение решений проблем
+        document.querySelectorAll('.problem-item').forEach(item => {
+            item.addEventListener('click', () => {
+                // Скрываем все решения
+                document.querySelectorAll('.solution').forEach(solution => {
+                    solution.classList.remove('active');
+                });
+                
+                // Показываем выбранное решение
+                const solutionId = item.dataset.solution;
+                document.getElementById(solutionId).classList.add('active');
+            });
+        });
+        
+        // Функциональность теста
+        let correctAnswersCount = 0;
+        
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Снимаем выделение со всех вариантов в этом вопросе
+                const options = this.parentElement.querySelectorAll('.quiz-option');
+                options.forEach(opt => opt.classList.remove('selected'));
+                
+                // Выделяем выбранный вариант
+                this.classList.add('selected');
+                
+                // Проверяем правильность ответа
+                const isCorrect = this.dataset.correct === 'true';
+                
+                // Показываем результат
+                const questionContainer = this.closest('.quiz-container');
+                const correctResult = questionContainer.querySelector('.quiz-result.correct');
+                const incorrectResult = questionContainer.querySelector('.quiz-result.incorrect');
+                
+                if (isCorrect) {
+                    correctResult.style.display = 'block';
+                    incorrectResult.style.display = 'none';
+                    correctAnswersCount++;
+                } else {
+                    correctResult.style.display = 'none';
+                    incorrectResult.style.display = 'block';
+                }
+            });
+        });
+        
+        // Навигация по вопросам теста
+        document.getElementById('nextQuestion1').addEventListener('click', function() {
+            document.querySelector('.quiz-container').style.display = 'none';
+            document.getElementById('question2-container').style.display = 'block';
+        });
+        
+        document.getElementById('nextQuestion2').addEventListener('click', function() {
+            document.getElementById('question2-container').style.display = 'none';
+            document.getElementById('question3-container').style.display = 'block';
+        });
+        
+        document.getElementById('showResults').addEventListener('click', function() {
+            document.getElementById('question3-container').style.display = 'none';
+            document.getElementById('results-container').style.display = 'block';
+            document.getElementById('correct-answers').textContent = correctAnswersCount;
+        });
+        
+        document.getElementById('restartQuiz').addEventListener('click', function() {
+            // Сброс теста
+            correctAnswersCount = 0;
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelectorAll('.quiz-result').forEach(result => {
+                result.style.display = 'none';
+            });
+            
+            // Возврат к первому вопросу
+            document.getElementById('results-container').style.display = 'none';
+            document.querySelector('.quiz-container').style.display = 'block';
+        });
+        
+        // Простой поиск
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            if (searchTerm.length < 2) return;
+            
+            // Поиск по проблемам
+            document.querySelectorAll('.problem-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.backgroundColor = '#fff3cd';
+                    // Показываем соответствующую вкладку
+                    document.querySelector('[data-tab="problems"]').click();
+                    // Показываем решение
+                    const solutionId = item.dataset.solution;
+                    document.querySelectorAll('.solution').forEach(solution => {
+                        solution.classList.remove('active');
+                    });
+                    document.getElementById(solutionId).classList.add('active');
+                } else {
+                    item.style.backgroundColor = '';
+                }
+            });
+            
+            // Поиск по компонентам
+            document.querySelectorAll('.component h3').forEach(component => {
+                const text = component.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    component.parentElement.style.backgroundColor = '#fff3cd';
+                    document.querySelector('[data-tab="components"]').click();
+                } else {
+                    component.parentElement.style.backgroundColor = '';
+                }
+            });
+            
+            // Поиск по инструментам
+            document.querySelectorAll('.tool-table td').forEach(cell => {
+                const text = cell.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    cell.style.backgroundColor = '#fff3cd';
+                    document.querySelector('[data-tab="tools"]').click();
+                } else {
+                    cell.style.backgroundColor = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
